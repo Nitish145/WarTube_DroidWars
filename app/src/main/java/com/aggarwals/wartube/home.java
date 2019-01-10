@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.math.BigInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,7 +22,9 @@ public class home extends AppCompatActivity
 
     TextView TseriesSub;
     TextView PewdiepieSub;
+    TextView difference;
 
+    //SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,7 +36,31 @@ public class home extends AppCompatActivity
 
         TseriesSubCount();
         PewdiepieSubCount();
+
+        //mSwipeRefreshLayout = findViewById(R.id.swipeToRefresh);
+
+        /*Long Pewdiepiesub = Long.parseLong(PewdiepieSub.getText().toString());
+        Long TSeriessub = Long.parseLong(TseriesSub.getText().toString());
+
+        Long Difference = Pewdiepiesub-TSeriessub;
+
+        difference = findViewById(R.id.difference);
+        String text = "<font color=#cc0029>PewDiePie is currently leading T-Series by </font>" + Difference;
+        difference.setText(Html.fromHtml(text));*/
+
+       /* mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                TseriesSubCount();
+                PewdiepieSubCount();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });*/
+
+
+
     }
+
 
     @Override
     public void onBackPressed() {
@@ -59,7 +86,6 @@ public class home extends AppCompatActivity
     private void TseriesSubCount() {
 
         TseriesSub = findViewById(R.id.TseriesSub);
-        PewdiepieSub = findViewById(R.id.PewdiepieSub);
 
         Call<Statistics> TseriesSubCount = ApiBuilder.getStatistics().getSubCount("UCq-Fj5jknLsUf-MWSy4_brA", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
         TseriesSubCount.enqueue(new Callback<Statistics>() {
@@ -105,6 +131,27 @@ public class home extends AppCompatActivity
 
         );
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.refresh, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                TseriesSubCount();
+                PewdiepieSubCount();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }
