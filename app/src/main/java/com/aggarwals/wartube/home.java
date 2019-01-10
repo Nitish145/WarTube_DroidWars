@@ -31,13 +31,8 @@ public class home extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-
-
-        BigInteger pewdiepie = BigInteger.ZERO;
-        BigInteger tseries = BigInteger.ZERO;
-
-        getSubCount();
-        getSubCount2();
+        TseriesSubCount();
+        PewdiepieSubCount();
     }
 
     @Override
@@ -61,37 +56,24 @@ public class home extends AppCompatActivity
         return false;
     }
 
-    private void getSubCount() {
+    private void TseriesSubCount() {
 
         TseriesSub = findViewById(R.id.TseriesSub);
         PewdiepieSub = findViewById(R.id.PewdiepieSub);
 
-        Call<Statistics> SubCount = TSeriesApi.getStatistics().getSubCount("UCq-Fj5jknLsUf-MWSy4_brA", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
-        SubCount.enqueue(new Callback<Statistics>() {
+        Call<Statistics> TseriesSubCount = ApiBuilder.getStatistics().getSubCount("UCq-Fj5jknLsUf-MWSy4_brA", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
+        TseriesSubCount.enqueue(new Callback<Statistics>() {
                              @Override
                              public void onResponse(Call<Statistics> call, Response<Statistics> response) {
                                  Statistics s=response.body();
 
                                  TseriesSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
 
-                                 Log.i("70", "onResponse: "+s.getEtag());
-                                 Log.i("71", "onResponse: "+s.getKind());
-                                 Log.i("72", "onResponse: "+s.getItems()[0].getEtag());
-                                 Log.i("73", "onResponse: "+s.getItems()[0].getKind());
-                                 Log.i("74", "onResponse: "+s.getItems()[0].getId());
-                                 Log.i("76", "onResponse: "+s.getItems()[0].getStatistics().getCommentCount());
-                                 Log.i("77", "onResponse: "+s.getItems()[0].getStatistics().getHiddenSubscriberCount());
-                                 Log.i("78", "onResponse: "+s.getItems()[0].getStatistics().getSubscriberCount());
-                                 Log.i("79", "onResponse: "+s.getItems()[0].getStatistics().getVideoCount());
-                                 Log.i("80", "onResponse: "+s.getItems()[0].getStatistics().getViewCount());
-                                 Log.i("81", "onResponse: "+s.getPageInfo().getTotalResults());
-                                 Log.i("82", "onResponse: "+s.getPageInfo().getResultsPerPage());
-
                              }
 
                              @Override
                              public void onFailure(Call<Statistics> call, Throwable t) {
-                                 Log.i("88", "onFailure: " + t.toString());
+                                 Log.i("89", "onFailure: " + t.toString());
                                  t.printStackTrace();
                              }
                          }
@@ -100,12 +82,12 @@ public class home extends AppCompatActivity
 
     }
 
-    private void getSubCount2() {
+    private void PewdiepieSubCount() {
 
         PewdiepieSub = findViewById(R.id.PewdiepieSub);
 
-        Call<Statistics> SubCount = TSeriesApi.getStatistics().getSubCount("UC-lHJZR3Gqxm24_Vd_AJ5Yw", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
-        SubCount.enqueue(new Callback<Statistics>() {
+        Call<Statistics> PewdiepieSubCount = ApiBuilder.getStatistics().getSubCount("UC-lHJZR3Gqxm24_Vd_AJ5Yw", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
+        PewdiepieSubCount.enqueue(new Callback<Statistics>() {
                              @Override
                              public void onResponse(Call<Statistics> call, Response<Statistics> response) {
                                  Statistics s=response.body();

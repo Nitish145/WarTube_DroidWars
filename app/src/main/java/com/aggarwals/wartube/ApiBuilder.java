@@ -6,23 +6,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public class TSeriesApi {
+public class ApiBuilder {
 
     private static final String key = "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0";
     private static final String url = "https://www.googleapis.com/youtube/v3/";
 
-    public static Statistics tSeriesSub = null;
+    public static Statistics SubCount = null;
 
     public static Statistics getStatistics(){
-        if (tSeriesSub == null){
+        if (SubCount == null){
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(url)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
-            tSeriesSub = retrofit.create(Statistics.class);
+            SubCount = retrofit.create(Statistics.class);
         }
-        return tSeriesSub;
+        return SubCount;
     }
 
 
