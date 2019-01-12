@@ -273,6 +273,9 @@ public class posts extends AppCompatActivity
                 AuthUI.getInstance().signOut(this);
                 return true;
 
+            case R.id.Profile:
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }

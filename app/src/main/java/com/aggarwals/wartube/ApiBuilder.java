@@ -8,7 +8,6 @@ import retrofit2.http.Query;
 
 public class ApiBuilder {
 
-    private static final String key = "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0";
     private static final String url = "https://www.googleapis.com/youtube/v3/";
 
     public static Statistics SubCount = null;

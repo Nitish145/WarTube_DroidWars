@@ -1,6 +1,7 @@
 package com.aggarwals.wartube;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,7 +33,12 @@ public class home extends AppCompatActivity
     TextView PewdiepieSub;
     TextView difference;
 
-    //SwipeRefreshLayout mSwipeRefreshLayout;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+    PieChart pieChart;
+
+    Long TSerSub;
+    Long PewdsSub;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +51,10 @@ public class home extends AppCompatActivity
         TseriesSubCount();
         PewdiepieSubCount();
 
-        //mSwipeRefreshLayout = findViewById(R.id.swipeToRefresh);
+        setUpPieChart();
+
+        mSwipeRefreshLayout = findViewById(R.id.swipeToRefresh);
+        mSwipeRefreshLayout.setColorSchemeColors(Color.RED);
 
         /*Long Pewdiepiesub = Long.parseLong(PewdiepieSub.getText().toString());
         Long TSeriessub = Long.parseLong(TseriesSub.getText().toString());
@@ -48,16 +65,52 @@ public class home extends AppCompatActivity
         String text = "<font color=#cc0029>PewDiePie is currently leading T-Series by </font>" + Difference;
         difference.setText(Html.fromHtml(text));*/
 
-       /* mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 TseriesSubCount();
                 PewdiepieSubCount();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
-        });*/
+        });
 
 
+
+    }
+
+    private void setUpPieChart() {
+
+        Long[] sub = {TSerSub, PewdsSub};
+        String[] channel = {"T-Series", "PewDiePie"};
+
+        pieChart = findViewById(R.id.PieChart);
+
+        pieChart.setRotationEnabled(true);
+        pieChart.setHoleRadius(35);
+        pieChart.setCenterText("PewDiePie v/s T-Series");
+        pieChart.setCenterTextSize(8);
+
+        List<PieEntry> pieEntries = new ArrayList<>();
+
+        for (int i = 0; i<sub.length; i++){
+            pieEntries.add(new PieEntry(sub[i], channel[i]));
+        }
+
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
+        pieDataSet.setSliceSpace(1);
+        pieDataSet.setValueTextSize(0);
+        pieDataSet.setColor(Color.BLACK);
+
+        List<Integer> colors = new ArrayList<>();
+        colors.add(Color.rgb(178, 34, 34));
+        colors.add(Color.GRAY);
+
+        pieDataSet.setColors(colors);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.animateY(1000);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
 
     }
 
@@ -94,6 +147,7 @@ public class home extends AppCompatActivity
                                  Statistics s=response.body();
 
                                  TseriesSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
+                                 TSerSub = Long.parseLong(TseriesSub.getText().toString());
 
                              }
 
@@ -119,6 +173,7 @@ public class home extends AppCompatActivity
                                  Statistics s=response.body();
 
                                  PewdiepieSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
+                                 PewdsSub = Long.parseLong(PewdiepieSub.getText().toString());
 
                              }
 
