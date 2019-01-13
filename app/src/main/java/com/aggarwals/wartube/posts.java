@@ -97,9 +97,7 @@ public class posts extends AppCompatActivity
         recyclerView.setLayoutManager(layoutManager);
         layoutManager.setStackFromEnd(true);
 
-
         recyclerView.setHasFixedSize(true);
-
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -180,7 +178,7 @@ public class posts extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Signed in!", Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Sign in Cancelled", Toast.LENGTH_LONG).show();
                 finish();
             }}
 

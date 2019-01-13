@@ -1,6 +1,7 @@
 package com.aggarwals.wartube;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +22,8 @@ import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,13 +77,32 @@ public class home extends AppCompatActivity
             }
         });
 
+        //Declare the timer
+        Timer t = new Timer();
+        //Set the schedule function and rate
+        t.scheduleAtFixedRate(new TimerTask() {
+
+                                  @Override
+                                  public void run() {
+                                      //Called each time when 1000 milliseconds (1 second) (the period parameter)
+                                      TseriesSubCount();
+                                      PewdiepieSubCount();
+                                  }
+
+                              },
+        //Set how long before to start calling the TimerTask (in milliseconds)
+                0,
+        //Set the amount of time between each execution (in milliseconds)
+                1000);
 
 
     }
 
     private void setUpPieChart() {
 
-        Long[] sub = {TSerSub, PewdsSub};
+        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+
+        Long[] sub = {pref.getLong("TSerSub", 1), pref.getLong("PewdsSub", 1)};
         String[] channel = {"T-Series", "PewDiePie"};
 
         pieChart = findViewById(R.id.PieChart);
@@ -88,7 +110,10 @@ public class home extends AppCompatActivity
         pieChart.setRotationEnabled(true);
         pieChart.setHoleRadius(35);
         pieChart.setCenterText("PewDiePie v/s T-Series");
-        pieChart.setCenterTextSize(8);
+        pieChart.setCenterTextSize(13);
+        pieChart.setEntryLabelTextSize(15);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
 
         List<PieEntry> pieEntries = new ArrayList<>();
 
@@ -113,6 +138,7 @@ public class home extends AppCompatActivity
         pieChart.invalidate();
 
     }
+
 
 
     @Override
@@ -149,6 +175,11 @@ public class home extends AppCompatActivity
                                  TseriesSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
                                  TSerSub = Long.parseLong(TseriesSub.getText().toString());
 
+                                 SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+                                 SharedPreferences.Editor editor = pref.edit();
+                                 editor.putLong("TSerSub", TSerSub);
+                                 editor.apply();
+
                              }
 
                              @Override
@@ -173,7 +204,12 @@ public class home extends AppCompatActivity
                                  Statistics s=response.body();
 
                                  PewdiepieSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
-                                 PewdsSub = Long.parseLong(PewdiepieSub.getText().toString());
+                                 PewdsSub = !PewdiepieSub.equals("")?Long.parseLong(PewdiepieSub.getText().toString()): 1;
+
+                                 SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
+                                 SharedPreferences.Editor editor = pref.edit();
+                                 editor.putLong("PewdsSub", PewdsSub);
+                                 editor.apply();
 
                              }
 
