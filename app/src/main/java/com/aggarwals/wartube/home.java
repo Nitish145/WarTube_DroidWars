@@ -1,13 +1,11 @@
 package com.aggarwals.wartube;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -35,12 +33,12 @@ public class home extends AppCompatActivity
     TextView TseriesSub;
     TextView PewdiepieSub;
     TextView difference;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    TextView condition;
 
     PieChart pieChart;
 
-    int TSerSub=0;
-    int PewdsSub=0;
+    int TSerSub = 0;
+    int PewdsSub = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,44 +47,29 @@ public class home extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
+        condition = findViewById(R.id.condition);
+        //condition.setText("* Above 80 million");
+
         TseriesSubCount();
         PewdiepieSubCount();
-        setChart();
+        setUpPieChart(TSerSub, PewdsSub);
 
-        mSwipeRefreshLayout = findViewById(R.id.swipeToRefresh);
-        mSwipeRefreshLayout.setColorSchemeColors(Color.RED);
-
-        /*Long Pewdiepiesub = Long.parseLong(PewdiepieSub.getText().toString());
-        Long TSeriessub = Long.parseLong(TseriesSub.getText().toString());
-
-        Long Difference = Pewdiepiesub-TSeriessub;
+        pieChart.animateXY(2000,2000);
 
         difference = findViewById(R.id.difference);
-        String text = "<font color=#cc0029>PewDiePie is currently leading T-Series by </font>" + Difference;
-        difference.setText(Html.fromHtml(text));*/
-
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                TseriesSubCount();
-                PewdiepieSubCount();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
 
         //Declare the timer
-        Timer t = new Timer();
+        Timer timer = new Timer();
         //Set the schedule function and rate
-        t.scheduleAtFixedRate(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
 
-                                  @Override
-                                  public void run() {
-                                      //Called each time when 1000 milliseconds (1 second) (the period parameter)
-                                      TseriesSubCount();
-                                      PewdiepieSubCount();
-                                  }
-
-                              },
+            @Override
+            public void run() {
+                //Called each time when 1000 milliseconds (1 second) (the period parameter)
+                TseriesSubCount();
+                PewdiepieSubCount();
+                }
+                },
                 //Set how long before to start calling the TimerTask (in milliseconds)
                 0,
                 //Set the amount of time between each execution (in milliseconds)
@@ -96,15 +79,13 @@ public class home extends AppCompatActivity
     }
 
     private void setUpPieChart(int a, int b) {
-
-
         int[] sub = {a, b};
-        String[] channel = {"T-Series \n "+String.valueOf(a), "PewDiePie\n"+String.valueOf(b)};
+        String[] channel = {"T-Series", "PewDiePie"};
 
         pieChart = findViewById(R.id.PieChart);
 
         pieChart.setRotationEnabled(true);
-        pieChart.setHoleRadius(35);
+        pieChart.setHoleRadius(40);
         pieChart.setCenterText("PewDiePie v/s T-Series");
         pieChart.setCenterTextSize(13);
         pieChart.setEntryLabelTextSize(15);
@@ -119,7 +100,7 @@ public class home extends AppCompatActivity
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         pieDataSet.setSliceSpace(1);
-        pieDataSet.setValueTextSize(0);
+        pieDataSet.setValueTextSize(2);
         pieDataSet.setColor(Color.BLACK);
 
         List<Integer> colors = new ArrayList<>();
@@ -129,7 +110,7 @@ public class home extends AppCompatActivity
         pieDataSet.setColors(colors);
 
         PieData pieData = new PieData(pieDataSet);
-            pieChart.setData(pieData);
+        pieChart.setData(pieData);
         pieChart.invalidate();
 
     }
@@ -168,7 +149,15 @@ public class home extends AppCompatActivity
                                         String Tcount = s.getItems()[0].getStatistics().getSubscriberCount();
                                         TseriesSub.setText(Tcount);
                                         TSerSub = Integer.parseInt(Tcount);
-                                        setUpPieChart(TSerSub, PewdsSub);
+                                        setUpPieChart(TSerSub-80000000, PewdsSub-80000000);
+
+                                        int Difference = PewdsSub-TSerSub;
+                                        if (Difference>0){
+                                            difference.setText("PewDiePie is currently leading T-Series by " + Difference);}
+                                        else {
+                                            difference.setText("T-Series is currently leading PewDiePie by "+ Difference);
+                                        }
+
                                     }
 
                                     @Override
@@ -194,7 +183,14 @@ public class home extends AppCompatActivity
                                           String Pcount=s.getItems()[0].getStatistics().getSubscriberCount();
                                           PewdiepieSub.setText(Pcount);
                                           PewdsSub=Integer.parseInt(Pcount);
-                                          setUpPieChart(TSerSub, PewdsSub);
+                                          setUpPieChart(TSerSub-80000000, PewdsSub-80000000);
+
+                                          int Difference = PewdsSub-TSerSub;
+                                          if (Difference>0){
+                                              difference.setText("PewDiePie is currently leading T-Series by " + Difference);}
+                                          else {
+                                              difference.setText("T-Series is currently leading PewDiePie by "+ Difference);
+                                          }
 
                                       }
 
@@ -211,26 +207,12 @@ public class home extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.refresh, menu);
         return true;
-    }
-
-    public void setChart() {
-
-            setUpPieChart(TSerSub, PewdsSub);
-
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.refresh:
-                TseriesSubCount();
-                PewdiepieSubCount();
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }

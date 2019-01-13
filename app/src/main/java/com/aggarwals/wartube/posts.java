@@ -59,11 +59,6 @@ public class posts extends AppCompatActivity
     private EditText mMessageEditText;
     private Button mSendButton;
 
-    private TextView ProfileText;
-    private ImageView profileImage;
-    private TextView ProfileName;
-    private TextView ProfileEmail;
-
     private String mUsername;
 
     private String name;
@@ -103,11 +98,6 @@ public class posts extends AppCompatActivity
         mPhotoPickerButton = findViewById(R.id.photoPickerButton);
         mMessageEditText = findViewById(R.id.messageEditText);
         mSendButton = findViewById(R.id.sendButton);
-
-        ProfileText = findViewById(R.id.ProfileText);
-        ProfileName = findViewById(R.id.ProfileName);
-        ProfileEmail = findViewById(R.id.ProfileEmail);
-        profileImage = findViewById(R.id.profileImage);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -174,12 +164,6 @@ public class posts extends AppCompatActivity
                        name = user.getDisplayName();
                        email = user.getEmail();
                        photoUrl = user.getPhotoUrl();
-
-//                    ProfileName.setText(name);
-//                    ProfileEmail.setText(email);
-//                    profileImage.setImageURI(photoUrl);
-//                    ProfileText.setText("PROFILE");
-
                 } else {
                     //user is signed out
                     onSignedOutCleanup();
@@ -267,14 +251,10 @@ public class posts extends AppCompatActivity
                     }
                     mMessageAdapter = new MessageAdapter(posts.this, friendlyMessages);
                     recyclerView.setAdapter(mMessageAdapter);
-
-                    FriendlyMessage message = dataSnapshot.getValue(FriendlyMessage.class);
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             };
             mMessageDatabaseReference.addValueEventListener(mValueEventListener);
