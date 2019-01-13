@@ -19,7 +19,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -42,7 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class posts extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener{
+        implements BottomNavigationView.OnNavigationItemSelectedListener {
 
 
     public static final String ANONYMOUS = "anonymous";
@@ -57,7 +59,16 @@ public class posts extends AppCompatActivity
     private EditText mMessageEditText;
     private Button mSendButton;
 
+    private TextView ProfileText;
+    private ImageView profileImage;
+    private TextView ProfileName;
+    private TextView ProfileEmail;
+
     private String mUsername;
+
+    private String name;
+    private String email;
+    private Uri photoUrl;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessageDatabaseReference;
@@ -92,6 +103,11 @@ public class posts extends AppCompatActivity
         mPhotoPickerButton = findViewById(R.id.photoPickerButton);
         mMessageEditText = findViewById(R.id.messageEditText);
         mSendButton = findViewById(R.id.sendButton);
+
+        ProfileText = findViewById(R.id.ProfileText);
+        ProfileName = findViewById(R.id.ProfileName);
+        ProfileEmail = findViewById(R.id.ProfileEmail);
+        profileImage = findViewById(R.id.profileImage);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -153,6 +169,17 @@ public class posts extends AppCompatActivity
                 if (user != null) {
                     //user is signed in
                     onSignedInInitialize(user.getDisplayName());
+
+                    // Name, email address, and profile photo Url
+                       name = user.getDisplayName();
+                       email = user.getEmail();
+                       photoUrl = user.getPhotoUrl();
+
+//                    ProfileName.setText(name);
+//                    ProfileEmail.setText(email);
+//                    profileImage.setImageURI(photoUrl);
+//                    ProfileText.setText("PROFILE");
+
                 } else {
                     //user is signed out
                     onSignedOutCleanup();
@@ -180,39 +207,40 @@ public class posts extends AppCompatActivity
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Sign in Cancelled", Toast.LENGTH_LONG).show();
                 finish();
-            }}
-
-            if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
-                Uri selectedImageUri = data.getData();
-
-                //Get a reference to store file at chat_photos/<FILENAME>
-                final StorageReference photoRef =
-                        mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
-
-                //upload file to firebase Storage
-                photoRef.putFile(selectedImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return photoRef.getDownloadUrl();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            Uri downloadUri = task.getResult();
-                            FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUri.toString());
-                            mMessageDatabaseReference.push().setValue(friendlyMessage);
-                        } else {
-                            Toast.makeText(posts.this, "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
             }
         }
+
+        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            Uri selectedImageUri = data.getData();
+
+            //Get a reference to store file at chat_photos/<FILENAME>
+            final StorageReference photoRef =
+                    mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
+
+            //upload file to firebase Storage
+            photoRef.putFile(selectedImageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return photoRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUri.toString());
+                        mMessageDatabaseReference.push().setValue(friendlyMessage);
+                    } else {
+                        Toast.makeText(posts.this, "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }
+    }
 
     private void onSignedOutCleanup() {
         mUsername = ANONYMOUS;
@@ -250,12 +278,14 @@ public class posts extends AppCompatActivity
                 }
             };
             mMessageDatabaseReference.addValueEventListener(mValueEventListener);
-        }}
-    private void detachDatabaseReadListener(){
+        }
+    }
+
+    private void detachDatabaseReadListener() {
         if (mValueEventListener != null) {
             mMessageDatabaseReference.removeEventListener(mValueEventListener);
         }
-        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -272,7 +302,11 @@ public class posts extends AppCompatActivity
                 return true;
 
             case R.id.Profile:
-
+                Intent intent = new Intent(this, profile.class);
+                intent.putExtra("name", name);
+                intent.putExtra("email", email);
+                intent.putExtra("photoUrl", photoUrl.toString());
+                startActivity(intent);
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -282,7 +316,7 @@ public class posts extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.navigation_home:
                 Intent intent3 = new Intent(posts.this, home.class);
                 startActivity(intent3);

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/profilebackground">
+
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"/>
+
+    <TextView
+        android:id="@+id/ProfileText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="60dp"
+        android:textColor="#f0fff0"
+        android:textAlignment="center"
+        android:textFontWeight="10"/>
+
+    <TextView
+        android:id="@+id/ProfileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
+        android:textSize="30dp"
+        android:textColor="#ffb6c1"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/ProfileEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="370dp"
+        android:textAlignment="center"
+        android:textColor="#ffb6c1"
+        android:textSize="30dp" />
+
+</android.widget.RelativeLayout>

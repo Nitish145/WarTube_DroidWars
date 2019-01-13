@@ -35,26 +35,23 @@ public class home extends AppCompatActivity
     TextView TseriesSub;
     TextView PewdiepieSub;
     TextView difference;
-
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     PieChart pieChart;
 
-    Long TSerSub;
-    Long PewdsSub;
+    int TSerSub=0;
+    int PewdsSub=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
         TseriesSubCount();
         PewdiepieSubCount();
-
-        setUpPieChart();
+        setChart();
 
         mSwipeRefreshLayout = findViewById(R.id.swipeToRefresh);
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED);
@@ -90,20 +87,19 @@ public class home extends AppCompatActivity
                                   }
 
                               },
-        //Set how long before to start calling the TimerTask (in milliseconds)
+                //Set how long before to start calling the TimerTask (in milliseconds)
                 0,
-        //Set the amount of time between each execution (in milliseconds)
+                //Set the amount of time between each execution (in milliseconds)
                 1000);
 
 
     }
 
-    private void setUpPieChart() {
+    private void setUpPieChart(int a, int b) {
 
-        SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
 
-        Long[] sub = {pref.getLong("TSerSub", 1), pref.getLong("PewdsSub", 1)};
-        String[] channel = {"T-Series", "PewDiePie"};
+        int[] sub = {a, b};
+        String[] channel = {"T-Series \n "+String.valueOf(a), "PewDiePie\n"+String.valueOf(b)};
 
         pieChart = findViewById(R.id.PieChart);
 
@@ -117,7 +113,7 @@ public class home extends AppCompatActivity
 
         List<PieEntry> pieEntries = new ArrayList<>();
 
-        for (int i = 0; i<sub.length; i++){
+        for (int i = 0; i < sub.length; i++) {
             pieEntries.add(new PieEntry(sub[i], channel[i]));
         }
 
@@ -133,12 +129,10 @@ public class home extends AppCompatActivity
         pieDataSet.setColors(colors);
 
         PieData pieData = new PieData(pieDataSet);
-        pieChart.animateY(1000);
-        pieChart.setData(pieData);
+            pieChart.setData(pieData);
         pieChart.invalidate();
 
     }
-
 
 
     @Override
@@ -153,7 +147,7 @@ public class home extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.posts_notifications:
                 Intent intent4 = new Intent(home.this, posts.class);
                 startActivity(intent4);
@@ -168,26 +162,21 @@ public class home extends AppCompatActivity
 
         Call<Statistics> TseriesSubCount = ApiBuilder.getStatistics().getSubCount("UCq-Fj5jknLsUf-MWSy4_brA", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
         TseriesSubCount.enqueue(new Callback<Statistics>() {
-                             @Override
-                             public void onResponse(Call<Statistics> call, Response<Statistics> response) {
-                                 Statistics s=response.body();
+                                    @Override
+                                    public void onResponse(Call<Statistics> call, Response<Statistics> response) {
+                                        Statistics s = response.body();
+                                        String Tcount = s.getItems()[0].getStatistics().getSubscriberCount();
+                                        TseriesSub.setText(Tcount);
+                                        TSerSub = Integer.parseInt(Tcount);
+                                        setUpPieChart(TSerSub, PewdsSub);
+                                    }
 
-                                 TseriesSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
-                                 TSerSub = Long.parseLong(TseriesSub.getText().toString());
-
-                                 SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
-                                 SharedPreferences.Editor editor = pref.edit();
-                                 editor.putLong("TSerSub", TSerSub);
-                                 editor.apply();
-
-                             }
-
-                             @Override
-                             public void onFailure(Call<Statistics> call, Throwable t) {
-                                 Log.i("89", "onFailure: " + t.toString());
-                                 t.printStackTrace();
-                             }
-                         }
+                                    @Override
+                                    public void onFailure(Call<Statistics> call, Throwable t) {
+                                        Log.i("89", "onFailure: " + t.toString());
+                                        t.printStackTrace();
+                                    }
+                                }
 
         );
 
@@ -199,26 +188,22 @@ public class home extends AppCompatActivity
 
         Call<Statistics> PewdiepieSubCount = ApiBuilder.getStatistics().getSubCount("UC-lHJZR3Gqxm24_Vd_AJ5Yw", "AIzaSyBveKLcR7ncGyyMIiuJAAG9XnNFtvlbaD0");
         PewdiepieSubCount.enqueue(new Callback<Statistics>() {
-                             @Override
-                             public void onResponse(Call<Statistics> call, Response<Statistics> response) {
-                                 Statistics s=response.body();
+                                      @Override
+                                      public void onResponse(Call<Statistics> call, Response<Statistics> response) {
+                                          Statistics s = response.body();
+                                          String Pcount=s.getItems()[0].getStatistics().getSubscriberCount();
+                                          PewdiepieSub.setText(Pcount);
+                                          PewdsSub=Integer.parseInt(Pcount);
+                                          setUpPieChart(TSerSub, PewdsSub);
 
-                                 PewdiepieSub.setText(s.getItems()[0].getStatistics().getSubscriberCount());
-                                 PewdsSub = !PewdiepieSub.equals("")?Long.parseLong(PewdiepieSub.getText().toString()): 1;
+                                      }
 
-                                 SharedPreferences pref = getSharedPreferences("MyPref", MODE_PRIVATE);
-                                 SharedPreferences.Editor editor = pref.edit();
-                                 editor.putLong("PewdsSub", PewdsSub);
-                                 editor.apply();
-
-                             }
-
-                             @Override
-                             public void onFailure(Call<Statistics> call, Throwable t) {
-                                 Log.i("88", "onFailure: " + t.toString());
-                                 t.printStackTrace();
-                             }
-                         }
+                                      @Override
+                                      public void onFailure(Call<Statistics> call, Throwable t) {
+                                          Log.i("88", "onFailure: " + t.toString());
+                                          t.printStackTrace();
+                                      }
+                                  }
 
         );
 
@@ -231,6 +216,12 @@ public class home extends AppCompatActivity
         return true;
     }
 
+    public void setChart() {
+
+            setUpPieChart(TSerSub, PewdsSub);
+
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

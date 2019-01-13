@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".posts"></activity>
+        <activity android:name=".profile"></activity>
     </application>
 
 </manifest>
