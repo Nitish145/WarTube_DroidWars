@@ -27,7 +27,7 @@ public class profile extends Activity {
         ProfileEmail = findViewById(R.id.ProfileEmail);
         profileImage = findViewById(R.id.profileImage);
 
-        profileImage.setImageDrawable(getDrawable(R.drawable.profiledefault));
+        //profileImage.setImageDrawable(getDrawable(R.drawable.profiledefault));
 
         Uri photoUrl = Uri.parse(getIntent().getExtras().getString("photoUrl"));
 

@@ -285,7 +285,11 @@ public class posts extends AppCompatActivity
                 Intent intent = new Intent(this, profile.class);
                 intent.putExtra("name", name);
                 intent.putExtra("email", email);
-                intent.putExtra("photoUrl", photoUrl.toString());
+                if (photoUrl != null){
+                intent.putExtra("photoUrl", photoUrl.toString());}
+                else {
+                    intent.putExtra("photoUrl","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1Gevu4Tk803Ydc4VywH_ANoJSf3B6rnuI64IChMJSdw9qfR7s");
+                }
                 startActivity(intent);
 
             default:
